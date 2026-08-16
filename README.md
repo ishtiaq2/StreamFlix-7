@@ -83,27 +83,27 @@ ones a real platform has.
                        │  playback events (HTTP)     │
                        ▼                             ▼
                      ┌────────────────────────────────────┐
-                     │  core-engine                :8981  │
+                     │  core-engine                       │  :8981
                      │  Jetty + Jersey                    │
                      │  EventResource / Alarm             │
                      │  Resource (reduction logic)        │
-                     └──────────────────────┬─────────────┘
+                     └───────────────┬────────────────────┘
                                      │ JDBC
                                      ▼
-                        ┌─────────────────────────┐
+                        ┌──────────────────────────┐
                         │  database (PostgreSQL)   │  :5432
                         │  users, subs, watch      │
                         │  history, events, alarms │
                         └────────────┬─────────────┘
                                      ▲
-                       ┌─────────────┴─────────────┐
+                       ┌─────────────┴──────────────┐
                        │                            │
-            ┌────────────────────┐       ┌────────────────────┐
-            │ chaos-agent          │      │ northbound            │
-            │ Python: HTTP+SSH      │      │ FastAPI: /status,     │
-            │ breaks things on      │      │ /metrics → external   │
-            │ purpose                │      │ dashboards            │
-            └────────────────────┘       └────────────────────┘
+            ┌───────────────────────┐     ┌────────────────────────┐
+            │ chaos-agent           │     │ northbound             │
+            │ Python: HTTP+SSH      │     │ FastAPI: /status,      │
+            │ breaks things on      │     │ /metrics → external    │
+            │ purpose               │     │ dashboards             │
+            └───────────────────────┘     └────────────────────────┘
 ```
 
 All seven containers share one Podman network (`streamflix-net`), reaching each other by
