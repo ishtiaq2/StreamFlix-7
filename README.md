@@ -63,19 +63,19 @@ ones a real platform has.
                               customer's browser
                                      │
                                      ▼
-                        ┌─────────────────────────┐
+                        ┌──────────────────────────┐
                         │   web-ui (nginx+static)  │   :8090
                         └────────────┬─────────────┘
                                      │ API calls
                                      ▼
-                        ┌─────────────────────────┐
+                        ┌──────────────────────────┐
                         │  edge-lb (nginx)         │   :8080
                         │  load balances catalog-  │
                         │  api instances           │
                         └────────────┬─────────────┘
                                      │
                        ┌─────────────┴─────────────┐
-                       ▼                            ▼
+                       ▼                           ▼
             ┌────────────────────┐     ┌───────────────────┐
             │ catalog-api (x2)   │     │ catalog-api (x2)  │
             │ FastAPI            │     │ FastAPI           │
