@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StreamFlix</title>
+  <style>
+    body { font-family: sans-serif; background: #141414; color: #fff; padding: 2rem; }
+    .title-card { display: inline-block; background: #222; padding: 1rem; margin: 0.5rem;
+                  border-radius: 8px; cursor: pointer; width: 180px; }
+    .title-card:hover { background: #333; }
+    #status { margin-top: 1rem; color: #46d369; }
+  </style>
+</head>
+<body>
+  <h1>StreamFlix</h1>
+  <div id="titles">Loading catalog...</div>
+  <div id="status"></div>
+
+  <script>
+    // web-ui talks to edge-lb, never to catalog-api directly --
+    // the "one front door" principle.
+    const API_BASE = "/api";
+
+    fetch(`${API_BASE}/titles`)
+      .then(res => res.json())
+      .then(titles => {
+        document.getElementById("titles").innerHTML = titles.map(t => `
+          <div class="title-card" onclick="play(${t.id}, '${t.name}')">
+            <strong>${t.name}</strong><br><small>${t.genre}</small>
+          </div>
+        `).join("");
+      });
+
+    function play(id, name) {
+      fetch(`${API_BASE}/play/${id}`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("status").innerText =
+            `Now playing: ${data.title} (stream ${data.streamId})`;
+        });
+    }
+  </script>
+</body>
+</html>

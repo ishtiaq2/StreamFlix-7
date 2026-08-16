@@ -1,0 +1,91 @@
+version: "3.8"
+
+networks:
+  streamflix-net:
+    driver: bridge
+
+volumes:
+  psql-data:
+
+services:
+  database:
+    image: docker.io/library/postgres:16
+    # To use the optional customization Dockerfile instead of the official
+    # image directly, comment out `image:` above and uncomment:
+    # build: ./database
+    container_name: database
+    env_file:
+      - ./database/.env
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks: [streamflix-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streamflix"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  core-engine:
+    build: ./core-engine
+    container_name: core-engine
+    env_file:
+      - ./core-engine/.env
+    depends_on:
+      database:
+        condition: service_healthy
+    networks: [streamflix-net]
+    ports:
+      - "8981:8981"
+
+  catalog-api:
+    build: ./catalog-api
+    container_name: catalog-api
+    env_file:
+      - ./catalog-api/.env
+    depends_on:
+      database:
+        condition: service_healthy
+      core-engine:
+        condition: service_started
+    networks: [streamflix-net]
+
+  web-ui:
+    build: ./web-ui
+    container_name: web-ui
+    networks: [streamflix-net]
+
+  edge-lb:
+    build: ./edge-lb
+    container_name: edge-lb
+    depends_on: [catalog-api, web-ui]
+    networks: [streamflix-net]
+    ports:
+      - "8080:8080"
+
+  chaos-agent:
+    build: ./chaos-agent
+    container_name: chaos-agent
+    env_file:
+      - ./chaos-agent/.env
+    depends_on: [catalog-api, core-engine]
+    networks: [streamflix-net]
+
+  northbound:
+    build: ./northbound
+    container_name: northbound
+    env_file:
+      - ./northbound/.env
+    depends_on: [core-engine, database]
+    networks: [streamflix-net]
+    ports:
+      - "9000:9000"
+
+# NOTE: some podman-compose versions ignore `depends_on: condition:` and only
+# wait for a container to *start*, not for its healthcheck to pass. Check
+# `podman-compose version`; edge-lb in particular currently only waits for
+# catalog-api/web-ui to *start* -- see the step-by-step guide's
+# troubleshooting section for how to tighten this once catalog-api has its
+# own healthcheck.
