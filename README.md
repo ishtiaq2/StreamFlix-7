@@ -76,18 +76,18 @@ ones a real platform has.
                                      │
                        ┌─────────────┴─────────────┐
                        ▼                            ▼
-            ┌────────────────────┐       ┌────────────────────┐
-            │ catalog-api (x2)    │       │ catalog-api (x2)    │
-            │ FastAPI              │      │ FastAPI              │
-            └──────────┬───────────┘      └──────────┬───────────┘
-                       │  playback events (HTTP)      │
-                       ▼                               ▼
-                        ┌─────────────────────────┐
-                        │  core-engine              │  :8981
-                        │  Jetty + Jersey            │
-                        │  EventResource / Alarm     │
-                        │  Resource (reduction logic) │
-                        └────────────┬─────────────┘
+            ┌────────────────────┐     ┌───────────────────┐
+            │ catalog-api (x2)   │     │ catalog-api (x2)  │
+            │ FastAPI            │     │ FastAPI           │
+            └──────────┬─────────┘     └─────────────┬─────┘
+                       │  playback events (HTTP)     │
+                       ▼                             ▼
+                     ┌────────────────────────────────────┐
+                     │  core-engine                :8981  │
+                     │  Jetty + Jersey                    │
+                     │  EventResource / Alarm             │
+                     │  Resource (reduction logic)        │
+                     └──────────────────────┬─────────────┘
                                      │ JDBC
                                      ▼
                         ┌─────────────────────────┐
