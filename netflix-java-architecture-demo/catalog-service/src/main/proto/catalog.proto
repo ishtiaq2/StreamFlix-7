@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package streaming.catalog.v1;
+
+option java_package = "com.example.streaming.catalog.grpc";
+option java_multiple_files = true;
+
+// "Think methods, not data" - the video's own framing for why Netflix
+// reaches for gRPC over REST on performance-sensitive internal paths.
+// Two RPC methods, not a resource-shaped CRUD surface.
+service CatalogService {
+  rpc GetAvailability(GetAvailabilityRequest) returns (AvailabilityResponse);
+  rpc GetShow(GetShowRequest) returns (ShowResponse);
+  rpc ListShows(ListShowsRequest) returns (ListShowsResponse);
+}
+
+message ListShowsRequest {
+  string title_filter = 1; // empty = no filter
+}
+
+message ListShowsResponse {
+  repeated ShowResponse shows = 1;
+}
+
+message GetShowRequest {
+  string show_id = 1;
+}
+
+message ShowResponse {
+  string id = 1;
+  string title = 2;
+  int32 release_year = 3;
+  repeated string genres = 4;
+}
+
+message GetAvailabilityRequest {
+  string show_id = 1;
+}
+
+message AvailabilityResponse {
+  repeated string regions = 1;
+  string streaming_since = 2;
+}

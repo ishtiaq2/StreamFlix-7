@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: catalog-service
+  threads:
+    virtual:
+      # The video's actual framing: Netflix tried this, rolled it back
+      # because it wasn't safe for all their use cases, and only
+      # recently started re-evaluating it now that JDK 25 fixed the
+      # underlying problems. Defaulted on here to demonstrate the
+      # config surface — a real team adopting this should read that
+      # story as a reason to roll it out carefully, not a reason to
+      # skip evaluating it themselves. Spring Boot wires virtual threads
+      # through Tomcat's connector and @Async by default once this is
+      # set — no other code change needed for the web tier.
+      enabled: true
+
+grpc:
+  server:
+    port: 9090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics

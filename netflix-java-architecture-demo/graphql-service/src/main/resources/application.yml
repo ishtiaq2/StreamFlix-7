@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: graphql-service
+  threads:
+    virtual:
+      enabled: true
+
+grpc:
+  client:
+    catalog-service:
+      address: static://localhost:9090
+      negotiation-type: plaintext # demo only — a real deployment terminates TLS between services
+
+dgs:
+  graphql:
+    graphiql:
+      enabled: true # http://localhost:8080/graphiql once running — real DGS dev tooling
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics

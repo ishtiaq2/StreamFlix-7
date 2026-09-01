@@ -1,0 +1,29 @@
+"""
+Schema-first, per DGS convention — the framework scans src/main/resources/
+schema for .graphqls files at startup and wires data fetchers to it by
+name. Own, original schema for this demo (a streaming-catalog domain,
+matching the video's own subject matter) — not copied from anyone's
+actual schema, Netflix's or otherwise.
+"""
+
+type Query {
+    "Look up a single show by its catalog id."
+    show(id: ID!): Show
+    "Search the catalog, optionally filtered by title."
+    shows(titleFilter: String): [Show!]!
+}
+
+type Show {
+    id: ID!
+    title: String!
+    releaseYear: Int
+    genres: [String!]!
+    "Populated via a downstream gRPC call to catalog-service — see
+    ShowsDataFetcher — not stored directly against this type."
+    availability: Availability
+}
+
+type Availability {
+    regions: [String!]!
+    streamingSince: String
+}
